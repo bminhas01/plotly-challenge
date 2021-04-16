@@ -40,13 +40,30 @@ d3.json("data/samples.json").then((importedData) => {
                         orientation: 'h'
                     }];
 
+                    dataBubble = [{
+                        x: filteredOtu_ids,
+                        y: filteredSample_values,
+                        mode: 'markers',
+                        text: filteredOtu_labels,
+                        marker:{
+                            color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)',  'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
+                            size: filteredSample_values
+                        }
+                    }];
+
                     var barLayout = {
                         yaxis : {
                             tickprefix: "OTU ID "
                         }
                     }
+
+                    var bubbleLayout = {
+                        showlegend: false
+
+                    }
             
                     Plotly.newPlot("bar", dataBar, barLayout);
+                    Plotly.newPlot("bubble", dataBubble, bubbleLayout);
                 };
             });
         });
