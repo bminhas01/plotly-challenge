@@ -40,6 +40,12 @@ d3.json("data/samples.json").then((importedData) => {
                         orientation: 'h'
                     }];
 
+                    var barLayout = {
+                        yaxis : {
+                            tickprefix: "OTU ID "
+                        }
+                    }
+
                     dataBubble = [{
                         x: filteredOtu_ids,
                         y: filteredSample_values,
@@ -50,12 +56,6 @@ d3.json("data/samples.json").then((importedData) => {
                             size: filteredSample_values
                         }
                     }];
-
-                    var barLayout = {
-                        yaxis : {
-                            tickprefix: "OTU ID "
-                        }
-                    }
 
                     var bubbleLayout = {
                         showlegend: false
@@ -102,6 +102,16 @@ d3.json("data/samples.json").then((importedData) => {
             
                     Plotly.restyle("bar", "x", [xBar]);
                     Plotly.restyle("bar", "y", [yBar]);
+
+                    var xBubble = [];
+                    var yBubble = [];
+
+                    xBubble = filteredOtu_ids,
+                    yBubble = filteredSample_values
+
+                    Plotly.restyle("bubble", "x", [xBubble]);
+                    Plotly.restyle("bubble", "y", [yBubble]);
+                     
                 };
             });
         });
