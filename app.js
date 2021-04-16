@@ -9,6 +9,20 @@ d3.json("data/samples.json").then((importedData) => {
         .text(item);
     });
 
+    // function demographicdata(){
+    //     importedData.metadata.forEach((record) =>{
+    //         Object.entries(record).forEach(([key,value]) => {
+    //             if(+selectedID === value){
+    //                 Object.entries(record).forEach(([key,value]) =>{
+    //                     d3.select("#sample-metadata")
+    //                     .append("li")
+    //                     .text(`${key}: ${value}`)
+    //                 })
+    //         }
+    //     })
+    // });
+    // }
+
     function init(){
         var selectedID  = "940";
         importedData.samples.forEach((row) =>{
@@ -37,6 +51,7 @@ d3.json("data/samples.json").then((importedData) => {
             });
         });
 
+        // Find demographic information based on selected ID
         importedData.metadata.forEach((record) =>{
             Object.entries(record).forEach(([key,value]) => {
                 if(+selectedID === value){
@@ -45,10 +60,10 @@ d3.json("data/samples.json").then((importedData) => {
                         .append("li")
                         .text(`${key}: ${value}`)
                     })
-            }
-        })
-    });
-}
+                }
+            })
+        });
+    }
 
     d3.selectAll('#selDataset').on("change", updatePlotly);
 
@@ -72,6 +87,19 @@ d3.json("data/samples.json").then((importedData) => {
                     Plotly.restyle("bar", "y", [yBar]);
                 };
             });
+        });
+
+        // Find demographic information based on selectedID
+        importedData.metadata.forEach((record) =>{
+            Object.entries(record).forEach(([key,value]) => {
+                if(+selectedID === value){
+                    Object.entries(record).forEach(([key,value]) =>{
+                        d3.select("#sample-metadata")
+                        .append("li")
+                        .text(`${key}: ${value}`)
+                    })
+                }
+            })
         });
     };
 
