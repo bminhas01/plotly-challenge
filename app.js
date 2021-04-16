@@ -36,7 +36,19 @@ d3.json("data/samples.json").then((importedData) => {
                 };
             });
         });
-    }
+
+        importedData.metadata.forEach((record) =>{
+            Object.entries(record).forEach(([key,value]) => {
+                if(+selectedID === value){
+                    Object.entries(record).forEach(([key,value]) =>{
+                        d3.select("#sample-metadata")
+                        .append("li")
+                        .text(`${key}: ${value}`)
+                    })
+            }
+        })
+    });
+}
 
     d3.selectAll('#selDataset').on("change", updatePlotly);
 
