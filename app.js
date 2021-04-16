@@ -27,6 +27,9 @@ d3.json("data/samples.json").then((importedData) => {
                     }];
 
                     var barLayout = {
+                        yaxis : {
+                            tickprefix: "OTU ID "
+                        }
                     }
             
                     Plotly.newPlot("bar", dataBar, barLayout);
@@ -58,8 +61,8 @@ d3.json("data/samples.json").then((importedData) => {
                 };
             });
         });
-    }
+    };
 
-init()
+init();
 
 })
