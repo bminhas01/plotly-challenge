@@ -12,6 +12,7 @@ function init() {
 
         demographicTable(idOptions[0]);
         buildGraph(idOptions[0]);
+        buildGauge(idOptions[0]);
 
     });
 };
@@ -81,9 +82,80 @@ function buildGraph(selectedID) {
     });
 };
 
+function buildGauge(selectedID) {
+    d3.json("data/samples.json").then((importedData) => {
+        var sampleOptions = importedData.metadata;
+        sampleOptions.forEach((record) => {
+            Object.entries(record).forEach(([key, value]) => {
+                if (+selectedID === value) {
+                    var weeklyFreq = record.wfreq
+
+                    var dataGauge = [{
+                        type: "pie",
+                        showlegend: false,
+                        hole: 0.5,
+                        rotation: 90,
+                        values: [100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100],
+                        text: ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9", ""],
+                        direction: "clockwise",
+                        textinfo: "text",
+                        textposition: "inside",
+                        marker: {
+                            colors: ["rgba(224, 224, 224, 0.6)", "rgba(255, 255, 204, 0.6)", "rgba(204, 255, 153, 0.6)", "rgba(178, 255, 102, 0.6)", "rgba(153, 255, 51, 0.6)", "rgba(51, 255, 51, 0.6)", "rgba(0, 204, 0, 0.6)", "rgba(0, 153, 76, 0.6)", "rgba(0, 102, 51, 0.6)", "white"]
+                        },
+                        labels: ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9", ""],
+                        hoverinfo: "label"
+                    }]
+                    
+
+                    // var h = 0.24
+                    // var k = 0.5
+                    // var r = 0.5
+                    // var c = 0.25
+                    // // theta = (100 - weeklyFreq) * 180 / 100
+                    // // theta = theta * Math.PI / 180
+                    // // x = h + r*Math.cos(theta)
+                    // // y = k + r*Math.sin(theta)
+                    // // path = 'M 0.235 0.5 L ' + str(x) + ' ' + str(y) + ' L 0.245 0.5 Z'
+
+                    // var degrees = 180 - weeklyFreq;
+                    // var radians = degrees * Math.PI / 180;
+                    // var x = r * Math.cos(radians);
+                    // var y = r * Math.sin(radians);
+                    // var path = `M 0.235 0.5 L ${x.toString()} ${y.toString()} L 0.245 0.5 Z`;
+                   
+                    var svg = d3.select("#gauge")
+                        .append("svg")
+
+                    var needle = svg.selectAll(".needle")
+                        .data(weeklyFreq)
+                        .enter()
+                        .append('line')
+                        .attr("x1", 0)
+                        .attr("x2", -78)
+                        .attr("y1", 0)
+                        .attr("y2", 0)
+                        .classed ("needle", true)
+                        .style("stroke", "red")
+                        .attr("transform", function (d) {
+                            return " translate(200,200) rotate(" + d + ")"
+                        } )
+                        console.log(svg.selectAll(".needle"))
+
+
+                    
+                    
+                    Plotly.newPlot("gauge", dataGauge)
+                };
+            });
+        });
+    })
+}
+
 function optionChanged(newsample) {
     demographicTable(newsample);
     buildGraph(newsample);
+    buildGauge(newsample)
 }
 
 
