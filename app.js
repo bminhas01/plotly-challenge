@@ -167,7 +167,7 @@ function buildGauge(selectedID) {
                         .style("stroke", "red")
                         .style("stroke-width", "5")
                         .attr("transform", function (d) {
-                            return " rotate(" + d * 18 + ")"
+                            return " rotate(" + d * 20 + ")"
                         });
                     
                     // Apply text to gauge sections
@@ -204,7 +204,7 @@ function buildGauge(selectedID) {
             });
         });
     });
-}
+};
 
 // Create a function to change visuals when another subject ID is selected
 function optionChanged(newsample) {
