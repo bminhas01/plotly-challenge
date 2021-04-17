@@ -97,74 +97,90 @@ function buildGauge(selectedID) {
                         .append("svg")
                         .attr("width", svgwidth)
                         .attr("height", svgheight);
-                    
+
                     var g = svg.append("g")
                         .attr("transform", "translate(200,300)")
 
-                    var freqOptions = [ "1","2","3","4","5","6","7",'8',"9"]
+                    var freqOptions = ["1", "2", "3", "4", "5", "6", "7", '8', "9"]
 
-                    gaugeColors = ["rgba(224, 224, 224, 0.6)", "rgba(255, 255, 153, 0.6)", 
-                    "rgba(204, 255, 153, 0.6)", "rgba(153, 255, 153, 0.6)", "rgba(125, 202, 75, 0.6)", 
-                    "rgba(51, 255, 51, 0.6)", "rgba(0, 204, 0, 0.6)", "rgba(0, 153, 76, 0.6)", 
-                    "rgba(0, 102, 51, 0.6)"]
+                    gaugeColors = ["rgba(224, 224, 224, 0.6)", "rgba(255, 255, 153, 0.6)",
+                        "rgba(204, 255, 153, 0.6)", "rgba(153, 255, 153, 0.6)", "rgba(125, 202, 75, 0.6)",
+                        "rgba(51, 255, 51, 0.6)", "rgba(0, 204, 0, 0.6)", "rgba(0, 153, 76, 0.6)",
+                        "rgba(0, 102, 51, 0.6)"]
 
                     var pie = d3.pie()
-                    .startAngle( (-1*Math.PI) / 2 )
-                    .endAngle( Math.PI / 2 )
-                    .value( function( gaugeColors ) {
-                        return 100 / gaugeColors.length;
-                    } );
+                        .startAngle((-1 * Math.PI) / 2)
+                        .endAngle(Math.PI / 2)
+                        .value(function (gaugeColors) {
+                            return 100 / gaugeColors.length;
+                        });
 
                     var path = d3.arc()
-                        .innerRadius(40)
+                        .innerRadius(60)
                         .outerRadius(130)
                         .padAngle(0);
-                    
+
                     var label = d3.arc()
-                    .innerRadius(90)
-                    .outerRadius(125)
-                    .padAngle(0);
-                        
-                    
-                    var arc = g.selectAll( '.arc' )
-                    .data(pie(freqOptions))
-                    .enter()
-                    .append( 'g' )
-                    .classed("class", true)
+                        .innerRadius(90)
+                        .outerRadius(125)
+                        .padAngle(0);
+
+
+                    var arc = g.selectAll('.arc')
+                        .data(pie(freqOptions))
+                        .enter()
+                        .append('g')
+                        .classed("class", true)
 
                     arc.append("path")
-                    .attr( "d", path )
-                    // .attr( "transform", "translate(200,300)" )
-                    .style( "fill", function( d, i ) {
-                        return gaugeColors[i] 
-                    })
+                        .attr("d", path)
+                        .style("fill", function (d, i) {
+                            return gaugeColors[i]
+                        })
 
-                    var needle = g.selectAll( ".needle" )
-                    .data([weeklyFreq])
-                    .enter()
-                    .append( 'line' )
-                    .attr( "x1", 0 )
-                    .attr( "x2", -78 )
-                    .attr( "y1", 0 )
-                    .attr( "y2", 0 )
-                    .classed("needle", true)
-                    .style( "stroke", "red" )
-                    .attr( "transform", function( d ) {
-                        return " rotate(" + d * 18 + ")"
-                    } );
+                    needle = g.selectAll(".needle")
+                        .data([weeklyFreq])
+                        .enter()
+                        .append('line')
+                        .attr("x1", 0)
+                        .attr("x2", -80)
+                        .attr("y1", 0)
+                        .attr("y2", 0)
+                        .classed("needle", true)
+                        .style("stroke", "red")
+                        .style("stroke-width", "5")
+                        .attr("transform", function (d) {
+                            return " rotate(" + d * 18 + ")"
+                        });
 
                     var textValues = ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9"]
 
                     arc.append("text")
-                    .attr("transform", function(d) { 
-                                return "translate(" + label.centroid(d) + ")"; 
+                        .attr("transform", function (d) {
+                            return "translate (" + label.centroid(d) + ")";
                         })
-                    .text(function( d, i ) {
-                        return textValues[i] 
-                    })
-                    .attr("color", "black");
+                        .text(function (d, i) {
+                            return textValues[i]
+                        })
+                        .attr("color", "black");
 
-                
+                    g.append("text")
+                        .attr("y", -200)
+                        .attr("x", -115)
+                        .style("font-size", "16px")
+                        .style("stroke", "black")
+                        .text("Belly Button Washing Frequency")
+                        .classed("title", true)
+
+                    g.append("text")
+                        .attr("y", -175)
+                        .attr("x", -65)
+                        .style("font-size", "16px")
+                        // .style("stroke", "black")
+                        .text("Scrubs per Week")
+                        .classed("subtitle", true)
+
+
                 };
             });
         });
