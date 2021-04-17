@@ -59,7 +59,6 @@ function buildGraph(selectedID) {
                         mode: 'markers',
                         text: filteredOtu_labels,
                         marker: {
-                            // color: ['rgb(93, 164, 214)', 'rgb(255, 144, 14)', 'rgb(44, 160, 101)', 'rgb(255, 65, 54)'],
                             colorscale: "Portland",
                             color: filteredOtu_ids,
                             size: filteredSample_values
@@ -84,122 +83,100 @@ function buildGraph(selectedID) {
 
 function buildGauge(selectedID) {
     d3.json("data/samples.json").then((importedData) => {
+        d3.select('#gauge').html("")
         var sampleOptions = importedData.metadata;
         sampleOptions.forEach((record) => {
             Object.entries(record).forEach(([key, value]) => {
                 if (+selectedID === value) {
-                    var weeklyFreq = record.wfreq
+                    var weeklyFreq = +record.wfreq
 
-                    var dataGauge = [{
-                        type: "pie",
-                        showlegend: false,
-                        hole: 0.5,
-                        rotation: 90,
-                        values: [100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100 / 9, 100],
-                        text: ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9", ""],
-                        direction: "clockwise",
-                        textinfo: "text",
-                        textposition: "inside",
-                        marker: {
-                            colors: ["rgba(224, 224, 224, 0.6)", "rgba(255, 255, 204, 0.6)", "rgba(204, 255, 153, 0.6)", "rgba(178, 255, 102, 0.6)", "rgba(153, 255, 51, 0.6)", "rgba(51, 255, 51, 0.6)", "rgba(0, 204, 0, 0.6)", "rgba(0, 153, 76, 0.6)", "rgba(0, 102, 51, 0.6)", "white"]
-                        },
-                        labels: ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9", ""],
-                        hoverinfo: "label"
-                    }]
-                    
+                    var svgwidth = 1000;
+                    var svgheight = 400;
 
-                    // var h = 0.24
-                    // var k = 0.5
-                    // var r = 0.5
-                    // var c = 0.25
-                    // // theta = (100 - weeklyFreq) * 180 / 100
-                    // // theta = theta * Math.PI / 180
-                    // // x = h + r*Math.cos(theta)
-                    // // y = k + r*Math.sin(theta)
-                    // // path = 'M 0.235 0.5 L ' + str(x) + ' ' + str(y) + ' L 0.245 0.5 Z'
-
-                    // var degrees = 180 - weeklyFreq;
-                    // var radians = degrees * Math.PI / 180;
-                    // var x = r * Math.cos(radians);
-                    // var y = r * Math.sin(radians);
-                    // var path = `M 0.235 0.5 L ${x.toString()} ${y.toString()} L 0.245 0.5 Z`;
-                   
                     var svg = d3.select("#gauge")
                         .append("svg")
-
-                    var needle = svg.selectAll(".needle")
-                        .data(weeklyFreq)
-                        .enter()
-                        .append('line')
-                        .attr("x1", 0)
-                        .attr("x2", -78)
-                        .attr("y1", 0)
-                        .attr("y2", 0)
-                        .classed ("needle", true)
-                        .style("stroke", "red")
-                        .attr("transform", function (d) {
-                            return " translate(200,200) rotate(" + d + ")"
-                        } )
-                        console.log(svg.selectAll(".needle"))
-
-
+                        .attr("width", svgwidth)
+                        .attr("height", svgheight);
                     
+                    var g = svg.append("g")
+                        .attr("transform", "translate(200,300)")
+
+                    var freqOptions = [ "1","2","3","4","5","6","7",'8',"9"]
+
+                    gaugeColors = ["rgba(224, 224, 224, 0.6)", "rgba(255, 255, 153, 0.6)", 
+                    "rgba(204, 255, 153, 0.6)", "rgba(153, 255, 153, 0.6)", "rgba(125, 202, 75, 0.6)", 
+                    "rgba(51, 255, 51, 0.6)", "rgba(0, 204, 0, 0.6)", "rgba(0, 153, 76, 0.6)", 
+                    "rgba(0, 102, 51, 0.6)"]
+
+                    var pie = d3.pie()
+                    .startAngle( (-1*Math.PI) / 2 )
+                    .endAngle( Math.PI / 2 )
+                    .value( function( gaugeColors ) {
+                        return 100 / gaugeColors.length;
+                    } );
+
+                    var path = d3.arc()
+                        .innerRadius(40)
+                        .outerRadius(130)
+                        .padAngle(0);
                     
-                    Plotly.newPlot("gauge", dataGauge)
+                    var label = d3.arc()
+                    .innerRadius(90)
+                    .outerRadius(125)
+                    .padAngle(0);
+                        
+                    
+                    var arc = g.selectAll( '.arc' )
+                    .data(pie(freqOptions))
+                    .enter()
+                    .append( 'g' )
+                    .classed("class", true)
+
+                    arc.append("path")
+                    .attr( "d", path )
+                    // .attr( "transform", "translate(200,300)" )
+                    .style( "fill", function( d, i ) {
+                        return gaugeColors[i] 
+                    })
+
+                    var needle = g.selectAll( ".needle" )
+                    .data([weeklyFreq])
+                    .enter()
+                    .append( 'line' )
+                    .attr( "x1", 0 )
+                    .attr( "x2", -78 )
+                    .attr( "y1", 0 )
+                    .attr( "y2", 0 )
+                    .classed("needle", true)
+                    .style( "stroke", "red" )
+                    .attr( "transform", function( d ) {
+                        return " rotate(" + d * 18 + ")"
+                    } );
+
+                    var textValues = ["0-1", "1-2", "2-3", "3-4", "4-5", "5-6", "6-7", "7-8", "8-9"]
+
+                    arc.append("text")
+                    .attr("transform", function(d) { 
+                                return "translate(" + label.centroid(d) + ")"; 
+                        })
+                    .text(function( d, i ) {
+                        return textValues[i] 
+                    })
+                    .attr("color", "black");
+
+                
                 };
             });
         });
-    })
+    });
 }
 
 function optionChanged(newsample) {
     demographicTable(newsample);
     buildGraph(newsample);
     buildGauge(newsample)
+
 }
 
-
-
-
-// d3.selectAll('#selDataset').on("change", updatePlotly);
-
-// function updatePlotly(selectedID) {
-//     d3.json("data/samples.json").then((importedData) => {
-//         var sampleOptions = importedData.samples;
-//         var selectedID = d3.select('#selDataset').node().value;
-
-//         sampleOptions.forEach((row) => {
-//             Object.entries(row).forEach(([key, value]) => {
-//                 // if (selectedID === value) {
-//                 var filteredOtu_ids = row.otu_ids;
-//                 var filteredSample_values = row.sample_values;
-//                 var filteredOtu_labels = row.otu_labels;
-
-//                 var xBar = [];
-//                 var yBar = [];
-
-//                 xBar = filteredSample_values.slice(0, 10).reverse(),
-//                     yBar = filteredOtu_ids.slice(0, 10).map(x => `OTU ID ${x}`).reverse(),
-
-//                     Plotly.restyle("bar", "x", [xBar]);
-//                 Plotly.restyle("bar", "y", [yBar]);
-
-//                 var xBubble = [];
-//                 var yBubble = [];
-
-//                 xBubble = filteredOtu_ids,
-//                     yBubble = filteredSample_values
-
-//                 Plotly.restyle("bubble", "x", [xBubble]);
-//                 Plotly.restyle("bubble", "y", [yBubble]);
-
-//                 // };
-//             });
-//         });
-//     });
-// demographicTable(selectedID)
-// buildGraph(selectedID)
-
-// };
 
 init();
